@@ -31,7 +31,7 @@ jobs:
         run: npm install -g @project-serum/anchor-cli
 
       - name: Compilar programa Anchor
-        working-directory: program
+        working-directory: programs/cyberia
         run: anchor build
 
       - name: Executar testes
