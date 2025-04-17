@@ -31,11 +31,11 @@ jobs:
         run: npm install -g @project-serum/anchor-cli
 
       - name: Compilar programa Anchor
-        working-directory: programs/cyberia
+        working-directory: programs/cyberia_program
         run: anchor build
 
       - name: Executar testes
-        working-directory: programs/cyberia
+        working-directory: programs/cyberia_program
         run: anchor test --skip-deploy
 
   deploy:
@@ -70,7 +70,7 @@ jobs:
           anchor config set wallet keypair.json
 
       - name: Deploy na Devnet
-        working-directory: programs/cyberia
+        working-directory: programs/cyberia_program
         run: |
           export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
           anchor deploy
