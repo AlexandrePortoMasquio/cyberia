@@ -1,4 +1,4 @@
-# CI/CD pipeline: build, test and deploy Anchor program to Solana Devnet
+# CI/CD pipeline: build, test and deploy Anchor program na Solana Devnet
 # Local: .github/workflows/deploy-devnet.yml
 
 name: CI/CD Solana Devnet
@@ -46,22 +46,32 @@ jobs:
       - name: Checkout do repositório
         uses: actions/checkout@v3
 
-      - name: Configurar Solana CLI no PATH
-        run: echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+      - name: Instalar Solana CLI v1.16.5
+        run: |
+          curl -sSfL https://release.solana.com/v1.16.5/install | sh
+          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Instalar Anchor CLI
+        run: npm install -g @project-serum/anchor-cli
 
       - name: Definir keypair (segredo)
         env:
           SOLANA_KEYPAIR: ${{ secrets.SOLANA_KEYPAIR_JSON }}
         run: |
+          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
           echo "$SOLANA_KEYPAIR" > keypair.json
           solana config set --keypair keypair.json
 
       - name: Configurar Anchor para Devnet
         run: |
+          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
           anchor config set cluster devnet
           anchor config set wallet keypair.json
 
       - name: Deploy na Devnet
         working-directory: programs/cyberia
-        run: anchor deploy
+        run: |
+          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+          anchor deploy
 
