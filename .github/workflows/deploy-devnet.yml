@@ -62,6 +62,6 @@ jobs:
           anchor config set wallet keypair.json
 
       - name: Deploy na Devnet
-        working-directory: program
+        working-directory: programs/cyberia
         run: anchor deploy
 
