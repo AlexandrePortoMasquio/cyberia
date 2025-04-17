@@ -35,7 +35,7 @@ jobs:
         run: anchor build
 
       - name: Executar testes
-        working-directory: program
+        working-directory: programs/cyberia
         run: anchor test --skip-deploy
 
   deploy:
