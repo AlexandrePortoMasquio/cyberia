@@ -1,6 +1,3 @@
-[toolchain]
-# Optional: specify Anchor/Rust versions for reproducibility
-
 [features]
 seeds = false    # disable automatic PDA generation via seeds
 skip-lint = false # enable code linting checks
