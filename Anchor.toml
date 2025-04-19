@@ -6,11 +6,9 @@ skip-lint = false # enable code linting checks
 # Mapping for localnet cluster
 cyberia_program = "HaesmfbnNYXgL7JGEPuAEPuAZcmELoHrHA355i5TSNui"
 
-#[programs.devnet]
-# Mapping for Devnet cluster
-# After running `anchor deploy`, copy the Program ID from the log:
-#   Program Id: HGQrWdDDiusDYaW33YCenNmDJtJkXG5kn2eHaj3cgntf
-#cyberia_program = "<YOUR_DEVNET_PROGRAM_ID>"
+[programs.devnet]
+# ID do programa após deploy em Devnet
+cyberia_program = "HGQrWdDDiusDYaW33YCenNmDJtJkXG5kn2eHaj3cgntf"
 
 [registry]
 # IDL registry endpoint (optional)
