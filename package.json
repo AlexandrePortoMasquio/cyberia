@@ -2,8 +2,8 @@
     "scripts": {
         "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
         "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
-        "format:check": "npm run lint && cargo fmt -- --check && anchor fmt -- --check",
-        "format": "npm run lint:fix && cargo fmt && anchor fmt"
+        "format:check": "npm run lint && cargo fmt -- --check",
+        "format": "npm run lint:fix && cargo fmt"
     },
     "dependencies": {
         "@coral-xyz/anchor": "^0.29.0"
