@@ -1,56 +1,60 @@
-# CI/CD pipeline: build, test and deploy Anchor program na Solana Devnet
-# Local: .github/workflows/deploy-devnet.yml
-
-name: CI/CD Solana Devnet
+name: Deploy Devnet
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
+      # 1) Checkout
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
+
+      # 2) Node.js + Prettier
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Instalar dependências JS
+      - name: Install JS dependencies
         run: npm ci
 
-      - name: Checar formatação JS/TS (Prettier)
+      - name: Check JS/TS formatting (Prettier)
         run: npm run lint
 
-      # → 2) Setup Rust + Anchor como antes
+      # 3) Rust toolchain
       - name: Instalar Rust (stable)
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
 
-      - name: Instalar Solana CLI v1.16.5
+      # 4) Solana & Anchor
+      - name: Install Solana CLI
         run: |
           curl -sSfL https://release.solana.com/v1.16.5/install | sh
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
 
-      - name: Instalar Anchor CLI
+      - name: Install Anchor CLI
         run: npm install -g @project-serum/anchor-cli
 
-      # → 3) Checagem de formatação Rust/Anchor
-      - name: Checar formatação Rust (cargo fmt)
+      # 5) Formatação Rust/Anchor e lint
+      - name: Check Rust formatting (cargo fmt)
         run: cargo fmt -- --check
 
-      - name: Checar formatação Anchor (anchor fmt)
+      - name: Check Anchor formatting (anchor fmt)
         run: anchor fmt -- --check
 
-      # → 4) Lint adicional em Rust
       - name: Lint Rust (clippy)
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      # → 5) Seu build e testes atuais
+      # 6) Build & Test
       - name: Compilar programa Anchor
         working-directory: programs/cyberia_program
         run: anchor build
