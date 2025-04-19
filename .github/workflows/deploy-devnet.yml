@@ -13,9 +13,18 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do repositório
-        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
+      - name: Instalar dependências JS
+        run: npm ci
+
+      - name: Checar formatação JS/TS (Prettier)
+        run: npm run lint
+
+      # → 2) Setup Rust + Anchor como antes
       - name: Instalar Rust (stable)
         uses: actions-rs/toolchain@v1
         with:
@@ -30,6 +39,18 @@ jobs:
       - name: Instalar Anchor CLI
         run: npm install -g @project-serum/anchor-cli
 
+      # → 3) Checagem de formatação Rust/Anchor
+      - name: Checar formatação Rust (cargo fmt)
+        run: cargo fmt -- --check
+
+      - name: Checar formatação Anchor (anchor fmt)
+        run: anchor fmt -- --check
+
+      # → 4) Lint adicional em Rust
+      - name: Lint Rust (clippy)
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      # → 5) Seu build e testes atuais
       - name: Compilar programa Anchor
         working-directory: programs/cyberia_program
         run: anchor build
@@ -74,4 +95,3 @@ jobs:
         run: |
           export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
           anchor deploy
-
