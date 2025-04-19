@@ -1,18 +1,32 @@
 [toolchain]
+# Optional: specify Anchor/Rust versions for reproducibility
 
 [features]
-seeds = false
-skip-lint = false
+seeds = false    # disable automatic PDA generation via seeds
+skip-lint = false # enable code linting checks
 
 [programs.localnet]
-cyberia_program = "HaesmfbnNYXgL7JGEPuAEPuAZcmELoHrHA355i5T5Nui"
+# Mapping for localnet cluster
+cyberia_program = "HaesmfbnNYXgL7JGEPuAEPuAZcmELoHrHA355i5TSNui"
+
+#[programs.devnet]
+# Mapping for Devnet cluster
+# After running `anchor deploy`, copy the Program ID from the log:
+#   Program Id: HGQrWdDDiusDYaW33YCenNmDJtJkXG5kn2eHaj3cgntf
+#cyberia_program = "<YOUR_DEVNET_PROGRAM_ID>"
 
 [registry]
+# IDL registry endpoint (optional)
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "devnet"
-wallet  = "target/test-keypair.json"
+wallet  = "/Users/masqual/cyberia_protocol/cyberia/target/test-keypair.json"
 
 [scripts]
+# Custom scripts for Anchor CLI
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+
+[test]
+# time (in milliseconds) to wait for the local validator to start
+startup_wait = 15000
