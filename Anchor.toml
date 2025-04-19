@@ -20,6 +20,10 @@ cyberia_program = "HaesmfbnNYXgL7JGEPuAEPuAZcmELoHrHA355i5TSNui"
 url = "https://api.apr.dev"
 
 [provider]
+cluster = "localnet"
+wallet = "${WALLET_PATH}"
+
+[provider]
 cluster = "devnet"
 wallet  = "/Users/masqual/cyberia_protocol/cyberia/target/test-keypair.json"
 
