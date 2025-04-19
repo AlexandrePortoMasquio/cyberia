@@ -21,7 +21,7 @@ url = "https://api.apr.dev"
 
 [provider]
 cluster = "devnet"
-wallet = "${WALLET_PATH}
+wallet = "${WALLET_PATH}"
 
 [scripts]
 # Custom scripts for Anchor CLI
