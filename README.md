@@ -15,7 +15,7 @@ Framework: Anchor
 
 Blockchain: Solana
 
-Program directory: /programs/cyberia
+Program directory: /programs/cyberia_program
 
 The current state includes the foundational logic for a prompt-based decentralized compute protocol.The MVP will act as a minimal, testable peer-to-peer prompt router using Cyberia's native token (XCYB) for transactions, deployed on Solana.
 
