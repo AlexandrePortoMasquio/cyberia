@@ -1,18 +1,21 @@
 use anchor_lang::prelude::*;
-use anchor_spl::{
-    associated_token::AssociatedToken,
-    token::{self, AuthorityType, InitializeMint, MintTo, SetAuthority, Transfer as TokenTransfer},
-};
+use anchor_spl::token::{self, AuthorityType, InitializeMint, MintTo, SetAuthority};
 
 declare_id!("83WQ78rDZprgM6zo2YEcvFMJTwSFWB7bRteebwefpgnB");
 
+// Number of decimal places for the token
+pub const DECIMALS: u8 = 9;
+// Total fixed supply to mint exactly once
+pub const INITIAL_SUPPLY: u64 = 1_000_000;
+
 #[program]
-pub mod cyberia_program {
+pub mod cyberia {
     use super::*;
 
-    /// Inicializa o mint com supply inicial e torna a supply imutável
-    pub fn initialize(ctx: Context<Initialize>, initial_supply: u64, decimals: u8) -> Result<()> {
-        // 1) Cria o mint on‑chain
+    /// Initializes the mint, mints the initial supply into the payer’s ATA,
+    /// and then removes the mint authority permanently.
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        // 1) Create the mint with payer as temporary authority
         token::initialize_mint(
             CpiContext::new(
                 ctx.accounts.token_program.to_account_info(),
@@ -21,31 +24,31 @@ pub mod cyberia_program {
                     rent: ctx.accounts.rent.to_account_info(),
                 },
             ),
-            decimals,
-            &ctx.accounts.mint_authority.key(),
-            None, // sem freeze authority
+            DECIMALS,
+            &ctx.accounts.payer.key(),
+            None,
         )?;
 
-        // 2) Cunha o supply inicial para a conta do payer
+        // 2) Mint the fixed initial supply to the payer’s associated token account
         token::mint_to(
             CpiContext::new(
                 ctx.accounts.token_program.to_account_info(),
                 MintTo {
                     mint: ctx.accounts.mint.to_account_info(),
                     to: ctx.accounts.token_account.to_account_info(),
-                    authority: ctx.accounts.mint_authority.to_account_info(),
+                    authority: ctx.accounts.payer.to_account_info(),
                 },
             ),
-            initial_supply,
+            INITIAL_SUPPLY,
         )?;
 
-        // 3) Remove permanentemente autoridade de mint (supply imutável)
+        // 3) Remove mint authority permanently
         token::set_authority(
             CpiContext::new(
                 ctx.accounts.token_program.to_account_info(),
                 SetAuthority {
                     account_or_mint: ctx.accounts.mint.to_account_info(),
-                    current_authority: ctx.accounts.mint_authority.to_account_info(),
+                    current_authority: ctx.accounts.payer.to_account_info(),
                 },
             ),
             AuthorityType::MintTokens,
@@ -54,39 +57,21 @@ pub mod cyberia_program {
 
         Ok(())
     }
-
-    /// Transfere tokens entre duas Associated Token Accounts
-    pub fn transfer(ctx: Context<Transfer>, amount: u64) -> Result<()> {
-        token::transfer(
-            CpiContext::new(
-                ctx.accounts.token_program.to_account_info(),
-                TokenTransfer {
-                    from: ctx.accounts.from.to_account_info(),
-                    to: ctx.accounts.to.to_account_info(),
-                    authority: ctx.accounts.authority.to_account_info(),
-                },
-            ),
-            amount,
-        )?;
-        Ok(())
-    }
 }
 
-/// Contexto para `initialize`
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    /// Mint account (PDA ou Keypair)
+    /// The mint account to be created
     #[account(
         init,
         payer = payer,
-        space = 8 + token::Mint::LEN,
-        mint::decimals = 0,
-        mint::authority = mint_authority,
+        mint::decimals = DECIMALS,
+        mint::authority = payer,
         mint::freeze_authority = None
     )]
     pub mint: Account<'info, token::Mint>,
 
-    /// Associated Token Account do payer para receber supply inicial
+    /// The payer’s associated token account for the initial supply
     #[account(
         init_if_needed,
         payer = payer,
@@ -95,38 +80,13 @@ pub struct Initialize<'info> {
     )]
     pub token_account: Account<'info, token::TokenAccount>,
 
-    /// Authority temporária usada apenas na initialize
-    #[account(mut)]
-    pub mint_authority: Signer<'info>,
-
-    /// Pagador de taxas e que recebe o supply inicial
+    /// Payer of transactions and temporary mint authority
     #[account(mut)]
     pub payer: Signer<'info>,
 
+    /// Programs and sysvars needed for CPI calls
+    pub token_program: Program<'info, token::Token>,
+    pub associated_token_program: Program<'info, token::AssociatedToken>,
     pub system_program: Program<'info, System>,
-    pub token_program: Program<'info, token::Token>,
-    pub associated_token_program: Program<'info, AssociatedToken>,
     pub rent: Sysvar<'info, Rent>,
-}
-
-/// Contexto para `transfer`
-#[derive(Accounts)]
-pub struct Transfer<'info> {
-    #[account(mut, constraint = from.amount >= amount @ ErrorCode::InsufficientFunds)]
-    pub from: Account<'info, token::TokenAccount>,
-
-    #[account(mut, constraint = to.mint == from.mint)]
-    pub to: Account<'info, token::TokenAccount>,
-
-    /// A autoridade que assina a transferência
-    pub authority: Signer<'info>,
-
-    pub token_program: Program<'info, token::Token>,
-}
-
-/// Erros customizados
-#[error_code]
-pub enum ErrorCode {
-    #[msg("Insufficient funds for the operation")]
-    InsufficientFunds,
 }
