@@ -6,7 +6,7 @@ declare_id!("83WQ78rDZprgM6zo2YEcvFMJTwSFWB7bRteebwefpgnB");
 // Number of decimal places for the token
 pub const DECIMALS: u8 = 9;
 // Total fixed supply to mint exactly once
-pub const INITIAL_SUPPLY: u64 = 1_000_000_000;
+pub const INITIAL_SUPPLY: u64 = 1_000_000_000; // 1 billion tokens
 
 #[program]
 pub mod cyberia {
