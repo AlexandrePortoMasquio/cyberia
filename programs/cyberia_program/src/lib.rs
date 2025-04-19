@@ -6,7 +6,8 @@ declare_id!("83WQ78rDZprgM6zo2YEcvFMJTwSFWB7bRteebwefpgnB");
 // Number of decimal places for the token
 pub const DECIMALS: u8 = 9;
 // Total fixed supply to mint exactly once
-pub const INITIAL_SUPPLY: u64 = 1_000_000_000; // 1 billion tokens
+pub const INITIAL_SUPPLY: u64 = 1_000_000_000 * 10u64.pow(DECIMALS as u32); // 1 billion tokens with 9 decimal places
+                                                                            // The mint authority is set to None, which means no one can mint new tokens.
 
 #[program]
 pub mod cyberia {
