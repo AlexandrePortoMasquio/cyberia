@@ -1,5 +1,7 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, AuthorityType, InitializeMint, MintTo, SetAuthority};
+use anchor_spl::associated_token::AssociatedToken;
+use anchor_spl::token::{self, InitializeMint, MintTo, SetAuthority};
+use spl_token::instruction::AuthorityType;
 
 declare_id!("83WQ78rDZprgM6zo2YEcvFMJTwSFWB7bRteebwefpgnB");
 
@@ -74,7 +76,7 @@ pub struct Initialize<'info> {
 
     /// The payer’s associated token account for the initial supply
     #[account(
-        init_if_needed,
+        init,
         payer = payer,
         associated_token::mint = mint,
         associated_token::authority = payer
@@ -87,7 +89,7 @@ pub struct Initialize<'info> {
 
     /// Programs and sysvars needed for CPI calls
     pub token_program: Program<'info, token::Token>,
-    pub associated_token_program: Program<'info, token::AssociatedToken>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
 }
