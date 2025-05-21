@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{self, InitializeMint, MintTo, SetAuthority};
+use anchor_spl::token::{self, InitializeMint, Mint, MintTo, SetAuthority, Token, TokenAccount};
 use spl_token::instruction::AuthorityType;
 
 declare_id!("83WQ78rDZprgM6zo2YEcvFMJTwSFWB7bRteebwefpgnB");
@@ -64,31 +64,26 @@ pub mod cyberia {
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    /// The mint account to be created
     #[account(
         init,
         payer = payer,
         mint::decimals = DECIMALS,
         mint::authority = payer,
-        mint::freeze_authority = None
     )]
-    pub mint: Account<'info, token::Mint>,
+    pub mint: Account<'info, Mint>,
 
-    /// The payer’s associated token account for the initial supply
     #[account(
         init,
         payer = payer,
         associated_token::mint = mint,
         associated_token::authority = payer
     )]
-    pub token_account: Account<'info, token::TokenAccount>,
+    pub token_account: Account<'info, TokenAccount>,
 
-    /// Payer of transactions and temporary mint authority
     #[account(mut)]
     pub payer: Signer<'info>,
 
-    /// Programs and sysvars needed for CPI calls
-    pub token_program: Program<'info, token::Token>,
+    pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,

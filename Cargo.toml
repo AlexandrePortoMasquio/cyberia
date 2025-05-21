@@ -6,3 +6,14 @@ resolver = "2"
 
 [profile.release]
 overflow-checks = true
+
+# =================================================
+# WORKAROUND TEMPORÁRIO PARA ESTOURO DE STACK SBF
+# TODO: remover este patch quando Anchor/Solana SDK ≥ 2.3
+#       já vier com sort_unstable por padrão.
+# =================================================
+
+[patch.crates-io]
+anchor-derive-accounts = { path = "patches/anchor-derive-accounts" }
+anchor-lang             = { git = "https://github.com/coral-xyz/anchor.git", branch = "master" }
+anchor-spl              = { git = "https://github.com/coral-xyz/anchor.git", branch = "master" }
