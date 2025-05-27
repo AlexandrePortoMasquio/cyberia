@@ -70,7 +70,7 @@ pub struct Initialize<'info> {
         mint::decimals = DECIMALS,
         mint::authority = payer,
     )]
-    pub mint: Account<'info, Mint>,
+    pub mint: Box<Account<'info, Mint>>,
 
     #[account(
         init,
@@ -78,10 +78,10 @@ pub struct Initialize<'info> {
         associated_token::mint = mint,
         associated_token::authority = payer
     )]
-    pub token_account: Account<'info, TokenAccount>,
+    pub token_account: Box<Account<'info, TokenAccount>>,
 
     #[account(mut)]
-    pub payer: Signer<'info>,
+    pub payer: Box<Signer<'info>>,
 
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
