@@ -8,5 +8,7 @@ resolver = "2"
 overflow-checks = true
 
 [workspace.dependencies]
-solana-program = "=2.1.2"
-solana-msg = "=2.1.2"
+solana-program = "=2.1.0"
+solana-pubkey = "=2.1.0"
+solana-msg = "=2.1.0"
+solana-sha256 = "=2.1.0"
